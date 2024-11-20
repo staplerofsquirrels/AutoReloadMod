@@ -9,7 +9,7 @@ If you did everything well you should have a menu that lets you switch this feat
 ## Building it:
 Required: Visual Studio, .NET desktop development workload  
 Clone the repository  
-Open the project in Visual Studio  
+Open AutoReload\AutoReload.sln in Visual Studio  
 Add the BepInEx NuGet [https://nuget.bepinex.dev/upload](https://nuget.bepinex.dev/upload)  
 Install the 2019.2.19 version of the Unity.Modules packade  
 Add MelonLoader.dll to the references from MelonLoader\net35\  
