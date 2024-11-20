@@ -1,7 +1,7 @@
 # AutoReloadMod
 ## Installation:  
 Install the modloader from: [https://melonwiki.xyz](https://melonwiki.xyz)  
-Download the newest release from from Releases  
+Download the newest release from from [Releases](https://github.com/staplerofsquirrels/AutoReloadMod/releases/latest/)  
 Unzip it, then add the files to gamefolder  
 This should place AutoReload.dll to the Mods folder and the asset bundle files into Squirrel Stapler_Data\StreamingAssets\AutoReloadMod  
 If you did everything well you should have a menu that lets you switch this feature on and off when you open the game.  
