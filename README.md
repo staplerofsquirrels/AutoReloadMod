@@ -11,5 +11,5 @@ Open AutoReload\AutoReload.sln in Visual Studio
 Add the BepInEx NuGet [https://nuget.bepinex.dev/upload](https://nuget.bepinex.dev/upload)  
 Install the 2019.2.19 version of the [UnityEngine.Modules](https://nuget.bepinex.dev/packages/unityengine.modules/2019.2.19) packade
 Add MelonLoader.dll to the references from MelonLoader\net35\  
-Add Assembly-CSharp.dll, UnityEngine.UI.dll, Unity.TextMeshPro.dll from Squirrel Stapler_Data\Managed 
+Add Assembly-CSharp.dll, UnityEngine.UI.dll, Unity.TextMeshPro.dll from Squirrel Stapler_Data\Managed  
 Build it with Ctrl + B
