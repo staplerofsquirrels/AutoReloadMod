@@ -6,6 +6,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Reflection;
+using static System.Net.Mime.MediaTypeNames;
+using System.Security.Cryptography;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace AutoReload
 {
@@ -23,7 +27,7 @@ namespace AutoReload
         TextMeshProUGUI autoreload_text;
         private AssetBundle assets;
         private string scene;
-
+        private Stream dest;
         public override void OnInitializeMelon()
         {
             AutoreloadMod = MelonPreferences.CreateCategory("AutoreloadMod");
@@ -56,16 +60,93 @@ namespace AutoReload
             }
             catch { return; }
         }
+        public string[] getresourcenames(string resourcedomain)
+        {
+            string assemblyname = Assembly.GetExecutingAssembly().GetName().Name;
+            string[] allresource = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+            string[] resource_names = new string[] { };
+
+            foreach (string resource in allresource)
+            {
+                bool isindomain = resource.StartsWith(assemblyname + "." + resourcedomain + ".");
+                if (isindomain)
+                {
+                    resource_names = resource_names.Append<string>(resource).ToArray();
+                }
+            }
+            return resource_names;
+        }
+
+        public void extractresource(string resource, string file)
+        {
+            FileStream destfile = File.Open(file, FileMode.OpenOrCreate);
+            Stream resourcefilestream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource);
+            resourcefilestream.CopyTo(destfile);
+            destfile.Close();
+            resourcefilestream.Close();
+        }
+
+        public void assetbundlecheck(string resourcedomain, string assetpath_base)
+        {
+            string assemblyname = Assembly.GetExecutingAssembly().GetName().Name;
+            //string assetpath_base = Path.Combine(UnityEngine.Application.streamingAssetsPath, "AutoReloadMod");
+            //string resourcedomain = "asset_bundles";
+            string[] resourcenames = getresourcenames(resourcedomain);
+
+            if (!Directory.Exists(assetpath_base))
+            {
+                LoggerInstance.Msg(assetpath_base + " does not exists");
+                Directory.CreateDirectory(assetpath_base);
+            }
+            else { LoggerInstance.Msg(assetpath_base + " exists");}
+
+            foreach (string resourcename in resourcenames)
+            {
+                string filepath = Path.Combine(assetpath_base, resourcename.Substring(assemblyname.Length+resourcedomain.Length +2));
+                MD5 md5 = MD5.Create();
+                bool filecheck = false;
+                if (File.Exists(filepath))
+                {
+                    Stream embeded = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcename);
+                    Stream local = File.OpenRead(filepath);
+                    byte[] embeded_hash = md5.ComputeHash(embeded);
+                    byte[] local_hash = md5.ComputeHash(local);
+                    embeded.Close();
+                    local.Close();
+                    filecheck = embeded_hash.SequenceEqual(local_hash);
+                    if (!filecheck)
+                    {
+                        LoggerInstance.Msg("Hash check failed for:" + filepath + ":; MD5 hash:" + BitConverter.ToString(local_hash) + "\n doesn't match with: " + BitConverter.ToString(embeded_hash));
+                    }
+                    else
+                    {
+                        LoggerInstance.Msg("Filecheck was sucessful");
+                    }
+                    
+                }
+
+                if (!filecheck)
+                {
+                    LoggerInstance.Msg("extracting " + resourcename + " to:" + filepath);
+                    extractresource(resourcename, filepath);
+                }
+            }
+        }
+
         public void MainMenuInit()
         {
-            string assetpath = Path.Combine(UnityEngine.Application.streamingAssetsPath, "AutoReloadMod/modmenubundle");
+            string assetpath_base = Path.Combine(UnityEngine.Application.streamingAssetsPath, "AutoReloadMod");
+            string[] resourcenames = getresourcenames("asset_bundles");
+
+            assetbundlecheck("asset_bundles", assetpath_base);
+
             if (assets == null)
             {
-                assets = AssetBundle.LoadFromFile(assetpath);
+                assets = AssetBundle.LoadFromFile(Path.Combine(assetpath_base, "modmenubundle"));
             }
             if (assets == null && prefab == null)
             {
-                LoggerInstance.Msg("Couldn't load asste bundle from" + assetpath);
+                LoggerInstance.Msg("Couldn't load asste bundle(s)");
                 return;
             }
             prefab = assets.LoadAsset<GameObject>("modmenucontainer.prefab");
