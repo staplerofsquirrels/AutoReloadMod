@@ -11,6 +11,6 @@ Required: Visual Studio, .NET desktop development workload
 Clone the repository  
 Open AutoReload\AutoReload.sln in Visual Studio  
 Add the BepInEx NuGet [https://nuget.bepinex.dev/upload](https://nuget.bepinex.dev/upload)  
-Install the 2019.2.19 version of the Unity.Modules packade  
+Install the 2019.2.19 version of the UnityEngine.Modules packade  
 Add MelonLoader.dll to the references from MelonLoader\net35\  
 Add Assembly-CSharp.dll, Unity.TextMeshPro.dll from Squirrel Stapler_Data\Managed  
