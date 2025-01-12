@@ -1,12 +1,15 @@
 using MelonLoader;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Reflection;
+using static System.Net.Mime.MediaTypeNames;
 using System.Security.Cryptography;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace AutoReload
 {
@@ -39,12 +42,21 @@ namespace AutoReload
                 ldl();
             }
 
-            switch (sceneName)
+            //switch (sceneName)
+            //{
+            //    case ("MainMenu"):
+            //        MainMenuInit();
+            //        break;
+            //    case ("MAP02"):
+            //        MainMenuInit();
+            //        LoggerInstance.Msg("MAP02 Loaded");
+            //        break;
+            //}
+            if (GameObject.Find("Menus/MainMenu/") != null)
             {
-                case ("MainMenu"):
-                    MainMenuInit();
-                    break;
+                MainMenuInit();
             }
+            
         }
         private void ldl()
         {
@@ -132,20 +144,23 @@ namespace AutoReload
 
         public void MainMenuInit()
         {
-            string assetpath_base = Path.Combine(UnityEngine.Application.streamingAssetsPath, "AutoReloadMod");
-            string[] resourcenames = getresourcenames("asset_bundles");
-
-            assetbundlecheck("asset_bundles", assetpath_base);
-
             if (assets == null)
             {
-                assets = AssetBundle.LoadFromFile(Path.Combine(assetpath_base, "modmenubundle"));
+                string assetpath_base = Path.Combine(UnityEngine.Application.streamingAssetsPath, "AutoReloadMod");
+                string[] resourcenames = getresourcenames("asset_bundles");
+                
+                assetbundlecheck("asset_bundles", assetpath_base);
+                if (assets == null)
+                {
+                    assets = AssetBundle.LoadFromFile(Path.Combine(assetpath_base, "modmenubundle"));
+                }
+                if (assets == null && prefab == null)
+                {
+                    LoggerInstance.Msg("Couldn't load asste bundle(s)");
+                    return;
+                }
             }
-            if (assets == null && prefab == null)
-            {
-                LoggerInstance.Msg("Couldn't load asste bundle(s)");
-                return;
-            }
+
             prefab = assets.LoadAsset<GameObject>("modmenucontainer.prefab");
             Transform mainmenu = GameObject.Find("Menus/MainMenu/").transform;
             Tree.Instantiate(prefab, mainmenu);
@@ -157,6 +172,7 @@ namespace AutoReload
             ReloadStatusUpdate();
             return;
         }
+
         public override void OnUpdate()
         {
             if (piss != null && melonentry_autoreload.Value && scene != "MainMenu")
