@@ -6,10 +6,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Reflection;
-using static System.Net.Mime.MediaTypeNames;
 using System.Security.Cryptography;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace AutoReload
 {
